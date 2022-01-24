@@ -56,3 +56,5 @@ if guess_word == target_word
 else
   puts "Better luck next time, the word was: ", target_word
 end
+
+# TODO: stats
