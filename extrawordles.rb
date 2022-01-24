@@ -5,12 +5,13 @@ require 'json'
 require 'rubygems'
 require 'paint'
 
+WORD_LENGTH = 5
 MAX_GUESSES = 6
 LOG_FILE = "extrawordles_log.json"
 WORDS_FILE = '/usr/share/dict/words'
 
 words = File.readlines(WORDS_FILE); words.count
-words5 = words.map(&:chomp).grep(/^[a-z]{5}$/); words5.length
+words5 = words.map(&:chomp).grep(/^[a-z]{#{WORD_LENGTH}}$/); words5.length
 
 target_word = words5.sample
 # guesses_remaining = MAX_GUESSES
@@ -28,14 +29,14 @@ colour = ->(c, i) {
   end
 }
 
-puts "Guess the 5-letter word."
+puts "Guess the #{WORD_LENGTH}-letter word."
 
 while guesses.count < MAX_GUESSES && guess_word != target_word
   puts "You have #{MAX_GUESSES - guesses.count} guesses remaining."
   guess_word = gets.chomp
 
   while !words5.include? guess_word
-    puts "That's not a 5-letter word in our dictionary."
+    puts "That's not a #{WORD_LENGTH}-letter word in our dictionary."
     guess_word = gets.chomp
   end
 
@@ -80,5 +81,5 @@ puts "#{current_streak} \tCurrent Streak"
 puts "#{max_streak} \tMax Streak"
 (1..6).each do |n|
   freq = guesses_tally[n].to_i
-  puts "#{n}: #{ '##' * freq }  #{freq}"
+  puts "#{n}: #{ '#' * freq }  #{freq}"
 end
