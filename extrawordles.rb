@@ -1,33 +1,37 @@
 #!/usr/bin/ruby
 
+require 'set'
+require 'json'
 require 'rubygems'
 require 'paint'
-require 'set'
 
 MAX_GUESSES = 6
-words = File.readlines('/usr/share/dict/words'); words.count
+LOG_FILE = "extrawordles_log.json"
+WORDS_FILE = '/usr/share/dict/words'
+
+words = File.readlines(WORDS_FILE); words.count
 words5 = words.map(&:chomp).grep(/^[a-z]{5}$/); words5.length
 
 target_word = words5.sample
-guesses_remaining = MAX_GUESSES
+# guesses_remaining = MAX_GUESSES
 guess_word = nil
-guessed = Set.new
-colour = ->(c, i, target_word) {
+guesses = []
+letter_colours = ('a'..'z').map {|c| [c, :black] }.to_h
+
+colour = ->(c, i) {
   if target_word[i] == c
     :green
   elsif target_word.chars.include?(c)
     :yellow
-  elsif guessed.include?(c)
-    :white
   else
-    :black
+    :white
   end
 }
 
 puts "Guess the 5-letter word."
 
-while guesses_remaining > 0 && guess_word != target_word
-  puts "You have #{guesses_remaining} guesses remaining."
+while guesses.count < MAX_GUESSES && guess_word != target_word
+  puts "You have #{MAX_GUESSES - guesses.count} guesses remaining."
   guess_word = gets.chomp
 
   while !words5.include? guess_word
@@ -35,26 +39,46 @@ while guesses_remaining > 0 && guess_word != target_word
     guess_word = gets.chomp
   end
 
+  guesses << guess_word
+
   print "\033[F"  # ANSI - beginning of previous line
 
   guess_word.chars.each_with_index do |c, i|
-    guessed << c
-    print Paint[c, colour[c, i, target_word], :bright]
+    col = colour[c, i]
+    print Paint[c, col, :bright]
+    letter_colours[c] = col
   end
   puts
 
-  ('a'..'z').each_with_index do |c, i|
-    print Paint[c, colour[c, i, target_word], :bright]
+  ('a'..'z').each do |c|
+    print Paint[c, letter_colours[c], :bright]
   end
   puts
-
-  guesses_remaining -= 1
 end
 
-if guess_word == target_word
-  puts "Well done, got it in #{MAX_GUESSES - guesses_remaining}"
+win = guess_word == target_word
+if win
+  puts "Well done, got it in #{guesses.count}"
 else
   puts "Better luck next time, the word was: ", target_word
 end
 
-# TODO: stats
+log = JSON.load_file(LOG_FILE) # rescue []
+log << {'t' => Time.now, 'word' => target_word, 'win' => win, 'guesses' => guesses.count}
+File.open(LOG_FILE, "w") {|f| f.puts JSON.dump(log) }
+
+attempts = log.length
+wins = log.select {|entry| entry['win'] }.length
+streaks = log.map {|entry| entry['win'] ? 'X' : '.' }.join
+current_streak = streaks[/X*$/].length
+max_streak = streaks.scan(/X*/).sort.last.length
+guesses_tally = log.map {|entry| entry['guesses'] }.tally
+
+puts "#{attempts} \tPlayed"
+puts "#{(wins / attempts.to_f * 100).round} \tWin %"
+puts "#{current_streak} \tCurrent Streak"
+puts "#{max_streak} \tMax Streak"
+(1..6).each do |n|
+  freq = guesses_tally[n].to_i
+  puts "#{n}: #{ '##' * freq }  #{freq}"
+end
