@@ -4,20 +4,27 @@ module WordleHelper
   class << self
 
     def words5
+      # literal_array_string = File.read('gnt-wordle-words.txt')
+      # return eval(literal_array_string)
       words = File.readlines('/usr/share/dict/words')
       # words.count
       words5 = words.map(&:chomp).grep(/^[a-z]{5}$/)
       # words5.length #=> 4594
     end
-    # words5.join.chars.tally
-    # # _.sort_by {|c, n| n }
-    # # _.reverse[0, 15]
-    # # _.map {|c, n| [c, n / 6806.0] }
-    # # _.map(&:first).join #=> "searolitnducpmh"
-    # words5.grep(/s/).grep(/e/).grep(/a/).grep(/o/).grep(/r/)  #=> ["arose"]
+
+    def most_common_characters(n = nil)
+      words5.inject([]) {|chars, word| chars + word.chars.uniq }.tally.sort_by {|c, n| n }.reverse
+      # words5.join.chars.tally
+      # # _.sort_by {|c, n| n }
+      # # _.reverse[0, 15]
+      # # _.map {|c, n| [c, n / 6806.0] }
+      # # _.map(&:first).join #=> "searolitnducpmh"
+      # words5.grep(/s/).grep(/e/).grep(/a/).grep(/o/).grep(/r/)  #=> ["arose"]
+    end
 
     def top10
-      words5.map(&:chomp).select {|word| word !~ /[^seaoriltnd]/ }
+      top10chars = most_common_characters[0, 15].map(&:first)
+      words5.map(&:chomp).select {|word| word !~ /[^#{top10chars.join}]/ }
     end # top10.count #=> 465
 
     def pairs
@@ -28,6 +35,7 @@ module WordleHelper
             pairs << [w1, w2] if w1 < w2 && (w1 + w2).chars.uniq.length == 10
           end
         end
+        pairs
       end
       # pairs.count #=> 88
     end
@@ -68,6 +76,30 @@ module WordleHelper
         n.none? {|c| word.include?(c) }
       end
     end
+
+    def remaining_words(guesses: [], colours: [])
+      words5.select do |word|
+        guesses.zip(colours).all? do |guess, cols|
+          guess.chars.zip(cols).each_with_index.all? do |(c, col), i|
+            case col
+            when :green
+              word[i] == c
+            when :yellow
+              word[i] != c && word.include?(c)
+            else
+              true
+            end
+          end
+        end
+      end
+    end
+
+    # def yes_no_from_colours(words_guessed: [], colours: [])
+    # def tally_remaining_words -- given each word guessed / given each word is answer / response --> 
+
+    def best_next_word(words_guessed: [], colours: [])
+      raise NotImplementedError
+    end
   end
 end
 
@@ -80,4 +112,8 @@ class String
     b2 = [0] * (longest - b2.length) + b2
     b1.zip(b2).map{ |a, b| a ^ b }.pack("U*")
   end
+end
+
+if __FILE__ == $0
+  p WordleHelper.words_matching yes: ARGV[0], no: ARGV[1]
 end

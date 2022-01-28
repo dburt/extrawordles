@@ -14,7 +14,6 @@ words = File.readlines(WORDS_FILE); words.count
 words5 = words.map(&:chomp).grep(/^[a-z]{#{WORD_LENGTH}}$/); words5.length
 
 target_word = words5.sample
-# guesses_remaining = MAX_GUESSES
 guess_word = nil
 guesses = []
 letter_colours = ('a'..'z').map {|c| [c, :black] }.to_h
@@ -30,6 +29,7 @@ colour = ->(c, i) {
 }
 
 puts "Guess the #{WORD_LENGTH}-letter word."
+t0 = Time.now
 
 while guesses.count < MAX_GUESSES && guess_word != target_word
   puts "You have #{MAX_GUESSES - guesses.count} guesses remaining."
@@ -64,8 +64,9 @@ else
   puts "Better luck next time, the word was: ", target_word
 end
 
-log = JSON.load_file(LOG_FILE) # rescue []
-log << {'t' => Time.now, 'word' => target_word, 'win' => win, 'guesses' => guesses.count}
+log = JSON.load_file(LOG_FILE) # rescue nil
+log ||= []
+log << {'t' => Time.now, 'word' => target_word, 'win' => win, 'guesses' => guesses.count, 't0' => t0}
 File.open(LOG_FILE, "w") {|f| f.puts JSON.dump(log) }
 
 attempts = log.length
