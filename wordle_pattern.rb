@@ -1,9 +1,15 @@
 class WordlePattern
   attr_reader :guess, :colours
 
-  def initialize(answer, guess)  # guess
-    @guess = guess
-    @colours = guess.chars.each_with_index.map do |c, i|
+  COLOUR_CHARS = {green: 'G', yellow: 'y', grey: '.'}.freeze
+  COLOUR_FROM_CHAR = COLOUR_CHARS.invert.freeze
+
+  def self.from_guess(answer, guess)
+    new(guess: guess, colours: colours_from_guess(answer, guess))
+  end
+
+  def self.colours_from_guess(answer, guess)
+    guess.chars.each_with_index.map do |c, i|
       if answer[i] == c
         :green
       elsif answer.chars.include?(c)
@@ -11,6 +17,15 @@ class WordlePattern
       else
         :grey
       end
+    end
+  end
+
+  def initialize(guess:, colours:)
+    @guess = guess
+    if colours.respond_to?(:chars)
+      @colours = colours.chars.map {|c| COLOUR_FROM_CHAR[c] }
+    else
+      @colours = colours
     end
   end
 
@@ -42,14 +57,7 @@ class WordlePattern
 
   def colours_as_word
     colours.map do |colour|
-      case colour
-      when :green
-        "G"
-      when :yellow
-        "y"
-      else
-        "."
-      end
+      COLOUR_CHARS[colour]
     end.join
   end
 end

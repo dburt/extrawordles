@@ -14,7 +14,7 @@ require_relative './wordle_pattern'
 #
 
 
-word_list = WordList.new(answers_file: 'wordlist.txt', guesses_file: 'validGuesses.txt')
+word_list = WordList.default
 
 word_count = word_list.guesses.size
 
