@@ -4,9 +4,9 @@ module WordleHelper
   class << self
 
     def words
-      @words ||= %w(wordlist validGuesses).sum([]) {|list| File.readlines("#{list}.txt") }.map(&:chomp)
+      #@words ||= %w(wordlist validGuesses).sum([]) {|list| File.readlines("#{list}.txt") }.map(&:chomp)
       # File.readlines('wordlist.txt').map(&:chomp)
-      # return File.readlines('gnt-words.txt').map(&:chomp)
+      return File.readlines('gnt-words.txt').map(&:chomp)
 
       # words = File.readlines('/usr/share/dict/words')
       # # words.count
@@ -104,14 +104,16 @@ module WordleHelper
     end
 
     # new functions:
-      # pick_word: (wordlist) => (target)
-      # in_list: (wordlist, guess) => (bool)
-      # guess: (target, guess) => (pattern)
-        # guess_to_clues: (target, guess) => (clues)
-        # clues_to_pattern: (guess, clues) => (pattern)
-      # learn: (clues, pattern) => (clues)
-        # pattern_to_clues: (pattern) => (clues)
-      # options: (wordlist, clues) => (shortlist)
+      # WordList
+        # pick_word: (wordlist) => (answer)
+        # in_list: (wordlist, guess) => (bool)
+      # WordleClues
+        # guess: (answer, guess) => (pattern)
+          # guess_to_clues: (answer, guess) => (clues)
+          # clues_to_pattern: (guess, clues) => (pattern)
+        # learn: (clues, pattern) => (clues)
+          # pattern_to_clues: (pattern) => (clues)
+        # filter: (wordlist, clues) => (shortlist)
   end
 end
 
