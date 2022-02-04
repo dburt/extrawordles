@@ -61,23 +61,30 @@ word_count = word_list.guesses.size
 #
 
 # initial_guess = "toned"
-%w(arise toned).each do |initial_guess|
+# %w(arise toned).each do |initial_guess|
+# %w(aeons tyler tared aloes later teary laser).each do |initial_guess|
+%w(opera aesir adieu raise).each do |initial_guess|
+
+  puts initial_guess
+
   CSV.open("solutions2-#{initial_guess}+.csv", 'w') do |csv|
     csv << %w(initial_guess pattern guess worst_case_words_left)
     initial_patterns = word_list.answers.group_by do |answer|
-      WordlePattern.new(answer, initial_guess)
+      WordlePattern.from_guess(answer, initial_guess)
     end
     initial_patterns.each_with_index do |(initial_pattern, answers), i|
       print "\r#{i}/#{initial_patterns.length} patterns - -/- guesses    "
       initial_clues = initial_pattern.to_clues
       initial_options_remaining = initial_clues.filter_words(word_list.answers)
+
       guesses = word_list.guesses
       # guesses = initial_clues.filter_words(word_list.guesses)
+
       guesses.each_with_index do |guess, j|
         print "\r#{i}/#{initial_patterns.length} patterns - #{j}/#{guesses.length} guesses    "
         patterns_seen = Set.new
         worst_case_words_left = answers.map do |answer|
-          pattern = WordlePattern.new(answer, guess)
+          pattern = WordlePattern.from_guess(answer, guess)
           next 0 if patterns_seen.include?(pattern)
           patterns_seen << pattern
           clues = pattern.to_clues
@@ -85,7 +92,7 @@ word_count = word_list.guesses.size
           options_remaining.size
         end.max
         csv << [initial_guess, initial_pattern.colours_as_word, guess, worst_case_words_left]
-        csv.flush
+        # csv.flush
       end
     end
   end

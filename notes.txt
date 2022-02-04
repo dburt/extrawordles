@@ -1,0 +1,44 @@
+notes
+
+Pairs of words with most average greens composed of only the top 10 letters, how well do they reduce the options space?
+
+$ ./helper2.rb tired loans
+Worst case: 16 answers left
+$ ./helper2.rb toned liars
+Worst case: 18 answers left
+$ ./helper2.rb tried loans
+Worst case: 19 answers left
+$ ./helper2.rb tared loins
+Worst case: 26 answers left
+$ ./helper2.rb toned rails
+Worst case: 20 answers left
+$ ./helper2.rb rated loins
+Worst case: 20 answers left
+$ ./helper2.rb toner dials
+Worst case: 20 answers left
+
+If we pick the first word to reduce the pool as much as possible in the worst case, what is the best choice?
+168: arise, raise, aesir, reais, serai
+194, ends in s: aloes
+195, 4 vowels: aeons
+196, 2 vowels: later
+198, 2.5 vowels: teary
+200, 1.5 vowels: tyler
+205: laser
+
+If we pick the second word to reduce the pool as much as possible depending on the first pattern we get back, how well can we do?
+12: aloes
+13: later
+14: tared, laser, aesir*
+15: aeons (with or without hard mode)
+16: arise, toned, raise, opera*
+17: arise (hard mode), aloes (hard)
+19: teary, toned (hard), tared (hard), later (hard)
+
+https://qntm.org/files/absurdle/absurdle.html
+# in 5:
+aloes
+nitre
+curve
+creme
+crepe
