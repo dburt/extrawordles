@@ -12,7 +12,8 @@ class WordlePattern
     guess.chars.each_with_index.map do |c, i|
       if answer[i] == c
         :green
-      elsif answer.chars.include?(c)
+      elsif answer.chars.include?(c) ## FIXME: max of n yellows for n instances of yellow in answer
+        # how many c in answer in wrong position?
         :yellow
       else
         :grey

@@ -11,7 +11,7 @@ class WordList
       @answers = @answers.grep(/^[a-z]{#{word_length}}$/)
       guesses = guesses.grep(/^[a-z]{#{word_length}}$/)
     end
-    @guesses = (@answers + guesses).sort
+    @guesses = (@answers + guesses).sort  # must be sorted for `bsearch`
   end
 
   def self.default

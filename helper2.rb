@@ -8,6 +8,7 @@ require_relative './wordle_clues'
 require_relative './wordle_pattern'
 
 word_list = WordList.default
+# word_list = WordList.new(answers_file: 'gnt-words.txt')
 
 if ARGV == ["+"]
   # list worst case from best 2nd guess from each processed file
@@ -62,10 +63,12 @@ elsif ARGV.count > 1 && ARGV.count.even?
     puts "Best worst case: #{best_worst_case}"
     puts "Guesses:"
     guesses = guesses_by_words_left[best_worst_case]
-    if (guesses & options).empty?
-      puts guesses
-    else
+    if (guesses & options).length > 0
       puts (guesses & options)
+    elsif (guesses & word_list.answers).length > 0
+      puts (guesses & word_list.answers)
+    else
+      puts guesses
     end
   end
 else

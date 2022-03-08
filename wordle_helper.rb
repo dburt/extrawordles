@@ -5,7 +5,7 @@ module WordleHelper
 
     def words
       #@words ||= %w(wordlist validGuesses).sum([]) {|list| File.readlines("#{list}.txt") }.map(&:chomp)
-      # File.readlines('wordlist.txt').map(&:chomp)
+      # return File.readlines('wordlist.txt').map(&:chomp)
       return File.readlines('gnt-words.txt').map(&:chomp)
 
       # words = File.readlines('/usr/share/dict/words')
@@ -44,8 +44,8 @@ module WordleHelper
     #pairs.map {|a| a.join " " } #=> ["adorn islet", "adorn stile", "adorn tiles", "ailed snort", "altos diner", "anted roils", "antis older", "arson tilde", "arson tiled", "astir olden", "dealt irons", "dealt rosin", "delta irons", "delta rosin", "dials tenor", "dials toner", "doles train", "drain stole", "dries talon", "dries tonal", "drone tails", "enrol staid", "ideal snort", "inert loads", "inlet roads", "inter loads", "islet radon", "laden riots", "laden tiros", "laden torsi", "laden trios", "lairs noted", "lairs toned", "lends ratio", "liars noted", "liars toned", "lined roast", "lined sorta", "lined taros", "liner toads", "lions rated", "lions tared", "lions trade", "lions tread", "liras noted", "liras toned", "loads niter", "loans tired", "loans tried", "lodes train", "loins rated", "loins tared", "loins trade", "loins tread", "loner staid", "nadir stole", "nodal rites", "nodal tiers", "nodal tires", "nodal tries", "nodes trail", "nodes trial", "noels triad", "nosed trail", "nosed trial", "noted rails", "oiled rants", "olden sitar", "olden stair", "older saint", "older satin", "older stain", "oldie rants", "radon stile", "radon tiles", "rails toned", "rides talon", "rides tonal", "roans tilde", "roans tiled", "salon tired", "salon tried", "sired talon", "sired tonal", "snore tidal", "soled train", "sonar tilde", "sonar tiled"]
 
     def top15
-      @top15 ||= words.map(&:chomp).select {|word| word !~ /[^seaoriltnducypm]/ }
-      # top15.count  #=> 1735
+      top15chars = most_common_characters[0, 17].map(&:first)
+      words.map(&:chomp).select {|word| word !~ /[^#{top15chars.join}]/ }
     end
     def triplets
       triplets = [];
@@ -129,5 +129,20 @@ class String
 end
 
 if __FILE__ == $0
-  p WordleHelper.words_matching yes: ARGV[0], no: ARGV[1]
+  case ARGV.count
+  when 1
+    p WordleHelper.send(ARGV[0])
+  when 2
+    p WordleHelper.words_matching yes: ARGV[0], no: ARGV[1]
+  else
+    STDERR.puts <<~END
+      usage: #{$0} yes_letters no_letters
+        e.g. #{$0} tans iredlo
+      or: #{$0} helper_method
+        e.g. #{$0} most_common_characters
+        e.g. #{$0} best_pairs
+        e.g. #{$0} triplets
+    END
+    abort
+  end
 end
