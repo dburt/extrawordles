@@ -15,6 +15,18 @@ WordleHelper.methods(false) #=> [:triplets, :greens, :best_pairs, :pairs, :words
 ```
 % ./wordle_helper.rb ein tardloschump
 ["begin", "being", "binge", "eking", "eying", "feign", "genie", "genii", "given", "knife", "vixen"]
+% ./helper2.rb tired .yy.G
+grind
+rabid
+braid
+druid
+rapid
+Finding best guess to differentiate...
+Best worst case: 1
+Guesses:
+braid
+rabid
+rapid
 ```
 
 ## To do

@@ -9,16 +9,35 @@ class WordlePattern
   end
 
   def self.colours_from_guess(answer, guess)
-    guess.chars.each_with_index.map do |c, i|
+    yellows = yellows_count_by_letter(answer, guess)
+    result = guess.chars.each_with_index.map do |c, i|
       if answer[i] == c
         :green
-      elsif answer.chars.include?(c) ## FIXME: max of n yellows for n instances of yellow in answer
-        # how many c in answer in wrong position?
+      elsif yellows[c] > 0
+        yellows[c] -= 1
         :yellow
       else
         :grey
       end
     end
+  end
+
+  def self.matches_count_by_letter(answer, guess)
+    answer_tally = answer.chars.tally
+    guess.chars.tally.map do |c, n|
+      [c, [n, answer_tally[c].to_i].min]
+    end.to_h
+  end
+
+  def self.greens_count_by_letter(answer, guess)
+    answer.chars.zip(guess.chars).map {|a, b| a if a == b }.tally
+  end
+
+  def self.yellows_count_by_letter(answer, guess)
+    greens = greens_count_by_letter(answer, guess)
+    matches_count_by_letter(answer, guess).map do |c, n|
+      [c, n - greens[c].to_i]
+    end.to_h
   end
 
   def initialize(guess:, colours:)

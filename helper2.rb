@@ -43,7 +43,7 @@ elsif ARGV.count > 1 && ARGV.count.even?
     WordlePattern.new(guess: guess, colours: pattern_colours).to_clues
   end
   options = clues.filter_words(word_list.answers)
-  # 🐛:
+  # FIXME: 🐛:
   # $ ./helper2.rb tired ..yG. loans .y... order G..GG
   # No possible answers found in default list with those clues
   # $ ./helper2.rb tired ..yG. loans .y...

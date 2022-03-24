@@ -5,8 +5,8 @@ module WordleHelper
 
     def words
       #@words ||= %w(wordlist validGuesses).sum([]) {|list| File.readlines("#{list}.txt") }.map(&:chomp)
-      # return File.readlines('wordlist.txt').map(&:chomp)
-      return File.readlines('gnt-words.txt').map(&:chomp)
+      return File.readlines('wordlist.txt').map(&:chomp)
+      # return File.readlines('gnt-words.txt').map(&:chomp)
 
       # words = File.readlines('/usr/share/dict/words')
       # # words.count
@@ -44,15 +44,21 @@ module WordleHelper
     #pairs.map {|a| a.join " " } #=> ["adorn islet", "adorn stile", "adorn tiles", "ailed snort", "altos diner", "anted roils", "antis older", "arson tilde", "arson tiled", "astir olden", "dealt irons", "dealt rosin", "delta irons", "delta rosin", "dials tenor", "dials toner", "doles train", "drain stole", "dries talon", "dries tonal", "drone tails", "enrol staid", "ideal snort", "inert loads", "inlet roads", "inter loads", "islet radon", "laden riots", "laden tiros", "laden torsi", "laden trios", "lairs noted", "lairs toned", "lends ratio", "liars noted", "liars toned", "lined roast", "lined sorta", "lined taros", "liner toads", "lions rated", "lions tared", "lions trade", "lions tread", "liras noted", "liras toned", "loads niter", "loans tired", "loans tried", "lodes train", "loins rated", "loins tared", "loins trade", "loins tread", "loner staid", "nadir stole", "nodal rites", "nodal tiers", "nodal tires", "nodal tries", "nodes trail", "nodes trial", "noels triad", "nosed trail", "nosed trial", "noted rails", "oiled rants", "olden sitar", "olden stair", "older saint", "older satin", "older stain", "oldie rants", "radon stile", "radon tiles", "rails toned", "rides talon", "rides tonal", "roans tilde", "roans tiled", "salon tired", "salon tried", "sired talon", "sired tonal", "snore tidal", "soled train", "sonar tilde", "sonar tiled"]
 
     def top15
-      top15chars = most_common_characters[0, 17].map(&:first)
+      top15chars = most_common_characters[0, 15].map(&:first)
       words.map(&:chomp).select {|word| word !~ /[^#{top15chars.join}]/ }
     end
     def triplets
-      triplets = [];
-      top15.each {|w1|
-        top15.each {|w2| next unless w1 < w2 && (w1 + w2).chars.uniq.length == 10
-        top15.each {|w3| 
-        triplets << [w1, w2, w3] if w1 < w2 && w2 < w3 && (w1 + w2 + w3).chars.uniq.length == 15 }}}; triplets.count
+      @triplets ||= begin
+        result = []
+        top15.each {|w1|
+          top15.each {|w2| next unless w1 < w2 && (w1 + w2).chars.uniq.length == 10
+            top15.each {|w3| 
+              result << [w1, w2, w3] if w1 < w2 && w2 < w3 && (w1 + w2 + w3).chars.uniq.length == 15
+            }
+          }
+        }
+        result
+      end
     end
     #=> 1953
 
@@ -69,6 +75,13 @@ module WordleHelper
         sort_by {|w1, w2, greens| greens }.reverse[0, 10]
       #=> [["loins", "tared", 6007], ["rails", "toned", 5955], ["lairs", "toned", 5889], ["loans", "tired", 5850], ["lions", "tared", 5799], ["roans", "tiled", 5795], ["loans", "tried", 5775], ["loins", "rated", 5756], ["liars", "toned", 5732], ["dials", "toner", 5712]]
     end
+
+    def best_triplets
+      triplets.
+        map {|w1, w2, w3| [w1, w2, w3, words.sum{|answer| greens(w1, answer) + greens(w2, answer) + greens(w3, answer) }] }.
+        sort_by {|w1, w2, w3, greens| greens }.reverse[0, 10]
+    end
+    # [["μυλος", "πασων", "τηρει", 2443], ["εστως", "μηρον", "πυλαι", 2413], ["αυλην", "μερος", "πιστω", 2405], ["αυλην", "μωρος", "πιστε", 2334], ["μεσον", "πυλαι", "ρητως", 2322], ["ερμην", "πιστω", "υαλος", 2299], ["εορτη", "μισων", "πυλας", 2280], ["λυσον", "πατει", "ρωμης", 2245], ["εορτη", "πυλας", "σιμων", 2238], ["ιερον", "λυσης", "πατμω", 2211]]
 
     def words_matching(yes: [], no: [])
       y = yes.respond_to?(:chars) ? yes.chars : yes
