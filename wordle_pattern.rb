@@ -60,7 +60,7 @@ class WordlePattern
         clues.yes_chars << c
         clues.no_positions << [c, i]
       else
-        clues.no_chars << c
+        clues.no_chars << c  # FIXME: this is wrong if there is another yellow or green for this colour
       end
     end
     clues

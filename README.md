@@ -31,9 +31,9 @@ rapid
 
 ## To do
 
-* Fix feedback algorithm so that multiply-guessed letters only appear yellow if there are multiples in the answer as well, e.g. {answer: ridge, guess: feeds} => ".y.y." not ".yyy."
-* precalculate all guess/answer combos
+* fix clues to include information about multiply-matched letters
 * calculate information in bits like in 3brown1blue
+* find best fixed 2-, 3-, 4- and 5-word guesses
 * complete solver
 * automate play by connecting solver with game
 * web front end for helper
