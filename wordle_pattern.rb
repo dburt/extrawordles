@@ -60,8 +60,11 @@ class WordlePattern
         clues.yes_chars << c
         clues.no_positions << [c, i]
       else
-        clues.no_chars << c  # FIXME: this is wrong if there is another yellow or green for this colour
+        clues.no_chars << c  # FIXME: should record a max count for that char in the clues
       end
+    end
+    (clues.no_chars & clues.yes_chars).each do |c|
+      clues.no_chars.delete(c)
     end
     clues
   end

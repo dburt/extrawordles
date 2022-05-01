@@ -27,7 +27,7 @@ class Array
   end
 end
 
-CSV.open("best_guesses.csv", "w") do |csv|
+CSV.open("reports/best_guesses.csv", "w") do |csv|
   csv << %w(guess1 guess2 average_information)
   guesses.each do |guess1|
     guesses.each do |guess2|
