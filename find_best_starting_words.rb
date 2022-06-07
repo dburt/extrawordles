@@ -102,25 +102,35 @@ best = {}
 CSV.open("reports/best_starting_words_#{Time.now.strftime("%Y-%m-%d_%H-%M-%S")}.csv", "w") do |csv|
   csv << ["words"] + stats_headings
 
-  puts "Evaluating given words and phrases"
-  starting_words.each do |guesses|
-    stats = guesses.guess_stats(answers)
-    csv << [ guesses.join(' '), *stats_headings.map {|stat| stats[stat.to_sym] } ]
-    csv.flush
-  end
+#  puts "Evaluating given words and phrases"
+#  starting_words.each do |guesses|
+#    stats = guesses.guess_stats(answers)
+#    csv << [ guesses.join(' '), *stats_headings.map {|stat| stats[stat.to_sym] } ]
+#    csv.flush
+#  end
 
-  # puts "Evaluating all single word guesses"
+  # puts "Evaluating all third guesses following 'tired loans'"
   # guesses = word_list.guesses
   # guesses.each_with_index do |guess, i|
-  #   stats = [guess].guess_stats(answers)
-  #   single_word_stats << [ guess, *stats_headings.map {|stat| stats[stat.to_sym] } ]
+  #   stats = ['tired', 'loans', guess].guess_stats(answers)
+  #   single_word_stats << [ 'tired loans ' + guess, *stats_headings.map {|stat| stats[stat.to_sym] } ]
   #   csv << single_word_stats.last
   #   csv.flush
   #   print "\r#{i+1}/#{guesses.count}"
   # end
 
-  puts "Evaluating all pairs of possible answers"
-  word_list.answers.each_with_index do |guess1, i|
+#  puts "Evaluating all single word guesses"
+#  guesses = word_list.guesses
+#  guesses.each_with_index do |guess, i|
+#    stats = [guess].guess_stats(answers)
+#    single_word_stats << [ guess, *stats_headings.map {|stat| stats[stat.to_sym] } ]
+#    csv << single_word_stats.last
+#    csv.flush
+#    print "\r#{i+1}/#{guesses.count}"
+#  end
+
+  puts "Evaluating selected pairs of possible answers"
+  File.readlines('ok_starting_guesses.txt').map(&:chomp).each_with_index do |guess1, i|
     word_list.answers.each_with_index do |guess2, j|
       print "\r#{i+1}:#{j+1}/#{word_list.answers.length + 1}"
       next if guess1 == guess2
@@ -130,6 +140,18 @@ CSV.open("reports/best_starting_words_#{Time.now.strftime("%Y-%m-%d_%H-%M-%S")}.
       csv.flush
     end
   end
+
+#  puts "Evaluating all pairs of possible answers"
+#  word_list.answers.each_with_index do |guess1, i|
+#    word_list.answers.each_with_index do |guess2, j|
+#      print "\r#{i+1}:#{j+1}/#{word_list.answers.length + 1}"
+#      next if guess1 == guess2
+#      guesses = [guess1, guess2]
+#      stats = guesses.guess_stats(answers)
+#      csv << [ guesses.join(' '), *stats_headings.map {|stat| stats[stat.to_sym] } ]
+#      csv.flush
+#    end
+#  end
 
   # select smaller list of better starting words
   # CSV.foreach("reports/best_starting_words.csv") do |row|

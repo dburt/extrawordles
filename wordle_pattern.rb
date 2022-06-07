@@ -5,7 +5,10 @@ class WordlePattern
   COLOUR_FROM_CHAR = COLOUR_CHARS.invert.freeze
 
   def self.from_guess(answer, guess)
-    new(guess: guess, colours: colours_from_guess(answer, guess))
+    @from_guess ||= {}
+    @from_guess[[answer, guess]] ||= begin
+      new(guess: guess, colours: colours_from_guess(answer, guess))
+    end
   end
 
   def self.colours_from_guess(answer, guess)
